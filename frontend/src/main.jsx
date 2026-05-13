@@ -219,7 +219,6 @@ function App() {
     <main className="page">
       <header className="hero">
         <div>
-          <p className="eyebrow">Bankacılık Case Study</p>
           <h1>Abonelik & Otomatik Ödeme Hatırlatma</h1>
           <p>
             Müşteri, abonelik, borç sorgulama, ödeme ve hatırlatma süreçlerini
@@ -267,35 +266,6 @@ function App() {
           )}
         </div>
 
-        <div className="card summary">
-          <h2>Özet</h2>
-          {summary ? (
-            <div className="metrics">
-              <div>
-                <strong>{summary.activeSubscriptionCount}</strong>
-                <span>Aktif abonelik</span>
-              </div>
-              <div>
-                <strong>{summary.unpaidCurrentMonthSubscriptionCount}</strong>
-                <span>Bu ay ödenmemiş</span>
-              </div>
-              <div>
-                <strong>
-                  {summary.successfulPaymentTotal.toLocaleString("tr-TR")} TL
-                </strong>
-                <span>Başarılı toplam ödeme</span>
-              </div>
-            </div>
-          ) : (
-            <p>Özet bilgisi yok.</p>
-          )}
-          <button onClick={checkReminders} disabled={!selectedCustomerId}>
-            Hatırlatma Kontrol Et
-          </button>
-        </div>
-      </section>
-
-      <section className="grid two">
         <div className="card">
           <h2>Abonelik Ekle</h2>
           <form onSubmit={handleSubscriptionCreate} className="form">
@@ -328,26 +298,6 @@ function App() {
               Abonelik Ekle
             </button>
           </form>
-        </div>
-
-        <div className="card">
-          <h2>Borç Sorgulama Sonucu</h2>
-          {debtResult ? (
-            <div className="debt">
-              <strong>{debtResult.amount.toLocaleString("tr-TR")} TL</strong>
-              <p>Dönem: {debtResult.period}</p>
-              <p>
-                Son ödeme:{" "}
-                {new Date(debtResult.dueDate).toLocaleDateString("tr-TR")}
-              </p>
-              <p>
-                Ödeme durumu:{" "}
-                {debtResult.isPaidForPeriod ? "Bu dönem ödenmiş" : "Ödenmemiş"}
-              </p>
-            </div>
-          ) : (
-            <p className="muted">Bir abonelik için “Borç Sorgula” seçin.</p>
-          )}
         </div>
       </section>
 
@@ -405,6 +355,55 @@ function App() {
               )}
             </tbody>
           </table>
+        </div>
+      </section>
+
+      <section className="grid two">
+        <div className="card summary">
+          <h2>Özet</h2>
+          {summary ? (
+            <div className="metrics">
+              <div>
+                <strong>{summary.activeSubscriptionCount}</strong>
+                <span>Aktif abonelik</span>
+              </div>
+              <div>
+                <strong>{summary.unpaidCurrentMonthSubscriptionCount}</strong>
+                <span>Bu ay ödenmemiş</span>
+              </div>
+              <div>
+                <strong>
+                  {summary.successfulPaymentTotal.toLocaleString("tr-TR")} TL
+                </strong>
+                <span>Başarılı toplam ödeme</span>
+              </div>
+            </div>
+          ) : (
+            <p>Özet bilgisi yok.</p>
+          )}
+          <button onClick={checkReminders} disabled={!selectedCustomerId}>
+            Hatırlatma Kontrol Et
+          </button>
+        </div>
+
+        <div className="card">
+          <h2>Borç Sorgulama Sonucu</h2>
+          {debtResult ? (
+            <div className="debt">
+              <strong>{debtResult.amount.toLocaleString("tr-TR")} TL</strong>
+              <p>Dönem: {debtResult.period}</p>
+              <p>
+                Son ödeme:{" "}
+                {new Date(debtResult.dueDate).toLocaleDateString("tr-TR")}
+              </p>
+              <p>
+                Ödeme durumu:{" "}
+                {debtResult.isPaidForPeriod ? "Bu dönem ödenmiş" : "Ödenmemiş"}
+              </p>
+            </div>
+          ) : (
+            <p className="muted">Bir abonelik için “Borç Sorgula” seçin.</p>
+          )}
         </div>
       </section>
 
