@@ -154,7 +154,42 @@ function App() {
     await runAction(() => api.deleteSubscription(id), "Abonelik silindi.");
     await loadCustomerData();
   }
+  async function deleteSelectedCustomer() {
+    if (!selectedCustomerId || !selectedCustomer) return;
 
+    const approved = window.confirm(
+      `${selectedCustomer.fullName} adlı müşteriyi silmek istediğine emin misin? Bu müşteriye ait abonelikler ve ödeme kayıtları da silinir.`,
+    );
+
+    if (!approved) return;
+
+    setLoading(true);
+    setMessage("");
+
+    try {
+      await api.deleteCustomer(selectedCustomerId);
+      const updatedCustomers = await api.getCustomers();
+      setCustomers(updatedCustomers);
+
+      const nextCustomerId =
+        updatedCustomers.length > 0 ? String(updatedCustomers[0].id) : "";
+      setSelectedCustomerId(nextCustomerId);
+
+      if (!nextCustomerId) {
+        setSubscriptions([]);
+        setPayments([]);
+        setSummary(null);
+        setDebtResult(null);
+        setReminders([]);
+      }
+
+      setMessage("Müşteri silindi.");
+    } catch (error) {
+      setMessage(error.message || "Müşteri silinirken bir hata oluştu.");
+    } finally {
+      setLoading(false);
+    }
+  }
   async function queryDebt(subscriptionId) {
     const debt = await runAction(
       () => api.queryDebt(subscriptionId),
@@ -216,6 +251,20 @@ function App() {
               </option>
             ))}
           </select>
+          {selectedCustomer && (
+            <div className="selectedCustomerRow">
+              <p className="muted">
+                Seçili müşteri: {selectedCustomer.fullName}
+              </p>
+              <button
+                type="button"
+                className="danger"
+                onClick={deleteSelectedCustomer}
+              >
+                Müşteriyi Sil
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="card summary">
@@ -257,6 +306,7 @@ function App() {
                 </option>
               ))}
             </select>
+
             <input
               name="providerName"
               placeholder="Hizmet sağlayıcı"
