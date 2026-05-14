@@ -41,6 +41,13 @@ function App() {
   const [reminders, setReminders] = useState([]);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  //update customer
+  const [isEditingCustomer, setIsEditingCustomer] = useState(false);
+  const [editCustomerForm, setEditCustomerForm] = useState({
+    fullName: "",
+    email: "",
+    phoneNumber: "",
+  });
 
   const selectedCustomer = useMemo(
     () => customers.find((c) => c.id === Number(selectedCustomerId)),
@@ -213,6 +220,65 @@ function App() {
       "Hatırlatma kontrolü tamamlandı.",
     );
     if (result) setReminders(result);
+  }
+
+  //update customer
+  function startEditCustomer() {
+    if (!selectedCustomer) return;
+
+    setEditCustomerForm({
+      fullName: selectedCustomer.fullName || "",
+      email: selectedCustomer.email || "",
+      phoneNumber: selectedCustomer.phoneNumber || "",
+    });
+
+    setIsEditingCustomer(true);
+    setMessage("");
+  }
+
+  function handleEditCustomerChange(event) {
+    const { name, value } = event.target;
+
+    setEditCustomerForm((previous) => ({
+      ...previous,
+      [name]: value,
+    }));
+  }
+
+  async function updateSelectedCustomer(event) {
+    event.preventDefault();
+
+    if (!selectedCustomerId) return;
+
+    const updated = await runAction(
+      () =>
+        api.updateCustomer(selectedCustomerId, {
+          fullName: editCustomerForm.fullName,
+          email: editCustomerForm.email,
+          phoneNumber: editCustomerForm.phoneNumber,
+        }),
+      "Müşteri bilgileri güncellendi.",
+    );
+
+    if (updated) {
+      setIsEditingCustomer(false);
+
+      const updatedCustomers = await api.getCustomers();
+      setCustomers(updatedCustomers);
+
+      setSelectedCustomerId(String(updated.id));
+
+      await loadCustomerData();
+    }
+  }
+
+  function cancelEditCustomer() {
+    setIsEditingCustomer(false);
+    setEditCustomerForm({
+      fullName: "",
+      email: "",
+      phoneNumber: "",
+    });
   }
 
   return (
